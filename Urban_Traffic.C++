@@ -28,12 +28,20 @@ public:
     Driver(const string& n, const string& license) : name(n), licenseNumber(license) {}
 
     void addPenalty(const Penalty& penalty) {
+
+        this->penalties.push_back(penalty);
+
         penalties.push_back(penalty);
+
     }
 
     double getTotalPenalties() const {
         double total = 0;
+
+        for (const auto& penalty : this->penalties) {
+
         for (const auto& penalty : penalties) {
+
             total += penalty.amount;
         }
         return total;
@@ -49,8 +57,13 @@ public:
     Car(const string& reg_num, Driver& own) : regNumber(reg_num), owner(own) {}
 
     void recordViolation(const TrafficViolation& violation, double penalty_amount) {
+
+        this->violations.push_back(violation);
+        this->owner.addPenalty(Penalty(penalty_amount, violation));
+
         violations.push_back(violation);
         owner.addPenalty(Penalty(penalty_amount, violation));
+
     }
 };
 
