@@ -7,7 +7,6 @@ using namespace std;
 class TrafficViolation {
 public:
     string description;
-
     TrafficViolation(const string& desc) : description(desc) {}
 };
 
@@ -15,7 +14,7 @@ class Penalty {
 public:
     double amount;
     TrafficViolation violation;
-
+  
     Penalty(double amt, const TrafficViolation& viol) : amount(amt), violation(viol) {}
 };
 
@@ -33,19 +32,44 @@ public:
 
     void addPenalty(const Penalty& penalty) {
         penalties.push_back(penalty);
+
+    Driver(const string& n, const string& license) : name(n), licenseNumber(license) {}
+
+    void addPenalty(const Penalty& penalty) {
+
+        this->penalties.push_back(penalty);
+
+
+        this->penalties.push_back(penalty);
+
+        penalties.push_back(penalty);
+
+
+
     }
 
     double getTotalPenalties() const {
         double total = 0;
+ 
         for (const auto& penalty : penalties) {
+
+        for (const auto& penalty : this->penalties) {
+
+        for (const auto& penalty : this->penalties) {
+
+        for (const auto& penalty : penalties) {
+
             total += penalty.amount;
         }
         return total;
     }
 };
 
+ 
 //  Here we are initialize static member variable
 int Driver::totalDrivers = 0;
+
+
 
 class Car {
 public:
@@ -67,10 +91,32 @@ public:
 // Here we are initialize static member variable
 int Car::totalViolations = 0;
 
+
+    Car(const string& reg_num, Driver& own) : regNumber(reg_num), owner(own) {}
+
+    void recordViolation(const TrafficViolation& violation, double penalty_amount) {
+
+        this->violations.push_back(violation);
+        this->owner.addPenalty(Penalty(penalty_amount, violation));
+        this->violations.push_back(violation);
+        this->owner.addPenalty(Penalty(penalty_amount, violation));
+
+        violations.push_back(violation);
+        owner.addPenalty(Penalty(penalty_amount, violation))
+
+    }
+};
+
+
 int main() {
 
     string driverName, licenseNumber, regNumber;
     int numViolations;
+
+
+    string driverName, licenseNumber, regNumber, violationDesc;
+    double penaltyAmount;
+
 
     cout << "Enter driver's name: ";
     getline(cin, driverName);
@@ -87,7 +133,8 @@ int main() {
     cin >> numViolations;
     cin.ignore();
 
-    
+
+   
     TrafficViolation* violations = new TrafficViolation[numViolations];
     double* penalties = new double[numViolations];
 
@@ -108,11 +155,30 @@ int main() {
     }
 
     cout << "Total penalties for " << driver.name << ": " << driver.getTotalPenalties() << endl;
+
     cout << "Total drivers created: " << Driver::totalDrivers << endl;  
     cout << "Total violations recorded: " << Car::totalViolations << endl;  
+
 
     delete[] violations;
     delete[] penalties;
 
     return 0;
 }
+
+    cout << "Enter violation description: ";
+    getline(cin, violationDesc);
+
+    cout << "Enter penalty amount: ";
+    cin >> penaltyAmount;
+    cin.ignore();
+
+    TrafficViolation violation(violationDesc);
+    car.recordViolation(violation, penaltyAmount);
+
+    cout << "Total penalties for " << driver.name << ": " << driver.getTotalPenalties() << endl;
+
+    return 0;
+}
+
+
