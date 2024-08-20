@@ -7,18 +7,14 @@ using namespace std;
 class TrafficViolation {
 public:
     string description;
-
     TrafficViolation(const string& desc) : description(desc) {}
-
-    TrafficViolation(const string & desc) : description(desc) {}
-
 };
 
 class Penalty {
 public:
     double amount;
     TrafficViolation violation;
-
+  
     Penalty(double amt, const TrafficViolation& viol) : amount(amt), violation(viol) {}
 };
 
@@ -27,6 +23,15 @@ public:
     string name;
     string licenseNumber;
     vector<Penalty> penalties;
+
+    static int totalDrivers;  // Static variable to count the number of Driver objects
+
+    Driver(const string& n, const string& license) : name(n), licenseNumber(license) {
+        totalDrivers++;  //  Here we are increment the static variable whenever a new Driver is created
+    }
+
+    void addPenalty(const Penalty& penalty) {
+        penalties.push_back(penalty);
 
     Driver(const string& n, const string& license) : name(n), licenseNumber(license) {}
 
@@ -40,18 +45,19 @@ public:
         penalties.push_back(penalty);
 
 
+
     }
 
     double getTotalPenalties() const {
         double total = 0;
+ 
+        for (const auto& penalty : penalties) {
 
         for (const auto& penalty : this->penalties) {
-
 
         for (const auto& penalty : this->penalties) {
 
         for (const auto& penalty : penalties) {
-
 
             total += penalty.amount;
         }
@@ -59,11 +65,32 @@ public:
     }
 };
 
+ 
+//  Here we are initialize static member variable
+int Driver::totalDrivers = 0;
+
+
+
 class Car {
 public:
     string regNumber;
     Driver& owner;
     vector<TrafficViolation> violations;
+
+    static int totalViolations;  // static variable to count total traffic violations
+
+    Car(const string& reg_num, Driver& own) : regNumber(reg_num), owner(own) {}
+
+    void recordViolation(const TrafficViolation& violation, double penalty_amount) {
+        violations.push_back(violation);
+        owner.addPenalty(Penalty(penalty_amount, violation));
+        totalViolations++;  // Here we are increment the static variable whenever a violation is recorded
+    }
+};
+
+// Here we are initialize static member variable
+int Car::totalViolations = 0;
+
 
     Car(const string& reg_num, Driver& own) : regNumber(reg_num), owner(own) {}
 
@@ -71,22 +98,21 @@ public:
 
         this->violations.push_back(violation);
         this->owner.addPenalty(Penalty(penalty_amount, violation));
-
-
         this->violations.push_back(violation);
         this->owner.addPenalty(Penalty(penalty_amount, violation));
 
         violations.push_back(violation);
-        owner.addPenalty(Penalty(penalty_amount, violation));
-
+        owner.addPenalty(Penalty(penalty_amount, violation))
 
     }
 };
+
 
 int main() {
 
     string driverName, licenseNumber, regNumber;
     int numViolations;
+
 
     string driverName, licenseNumber, regNumber, violationDesc;
     double penaltyAmount;
@@ -103,13 +129,12 @@ int main() {
     getline(cin, regNumber);
     Car car(regNumber, driver);
 
-
     cout << "Enter number of violations: ";
     cin >> numViolations;
     cin.ignore();
 
-    // using array here 
-  
+
+   
     TrafficViolation* violations = new TrafficViolation[numViolations];
     double* penalties = new double[numViolations];
 
@@ -131,6 +156,10 @@ int main() {
 
     cout << "Total penalties for " << driver.name << ": " << driver.getTotalPenalties() << endl;
 
+    cout << "Total drivers created: " << Driver::totalDrivers << endl;  
+    cout << "Total violations recorded: " << Car::totalViolations << endl;  
+
+
     delete[] violations;
     delete[] penalties;
 
@@ -151,4 +180,5 @@ int main() {
 
     return 0;
 }
+
 
