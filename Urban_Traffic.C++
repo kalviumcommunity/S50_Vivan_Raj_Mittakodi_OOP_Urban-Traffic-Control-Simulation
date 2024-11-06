@@ -4,19 +4,32 @@
 
 using namespace std;
 
-class TrafficViolation {
+// Abstract class to represent common behavior for violations
+class IViolation {
+public:
+    virtual string getDescription() const = 0;  
+    virtual double getAmount() const = 0;       
+    virtual ~IViolation() = default;             
+};
+
+class TrafficViolation : public IViolation {
 private:
     string description;
 
 public:
     TrafficViolation(const string& desc) : description(desc) {}
 
-    string getDescription() const {
+    string getDescription() const override {
         return description;
+    }
+
+    double getAmount() const override {
+        return 0.0;  
     }
 };
 
-class Penalty {
+
+class Penalty : public IViolation {
 private:
     double amount;
     TrafficViolation violation;
@@ -24,12 +37,12 @@ private:
 public:
     Penalty(double amt, const TrafficViolation& viol) : amount(amt), violation(viol) {}
 
-    double getAmount() const {
-        return amount;
+    string getDescription() const override {
+        return violation.getDescription();
     }
 
-    TrafficViolation getViolation() const {
-        return violation;
+    double getAmount() const override {
+        return amount;
     }
 };
 
@@ -67,23 +80,25 @@ public:
     }
 };
 
-// Initialize static member variable
+
 int Driver::totalDrivers = 0;
 
 class Car {
 private:
     string regNumber;
     Driver& owner;
-    vector<TrafficViolation> violations;
+    vector<IViolation*> violations;
 
 public:
     static int totalViolations;
 
     Car(const string& reg_num, Driver& own) : regNumber(reg_num), owner(own) {}
 
-    void recordViolation(const TrafficViolation& violation, double penalty_amount) {
+    void recordViolation(IViolation* violation) {
         violations.push_back(violation);
-        owner.addPenalty(Penalty(penalty_amount, violation));
+        if (Penalty* penalty = dynamic_cast<Penalty*>(violation)) {
+            owner.addPenalty(*penalty);
+        }
         totalViolations++;
     }
 
@@ -96,7 +111,7 @@ public:
     }
 };
 
-// Initialize static member variable
+
 int Car::totalViolations = 0;
 
 int main() {
@@ -134,7 +149,8 @@ int main() {
         cin.ignore();
         penalties[i] = penaltyAmount;
 
-        car.recordViolation(violations[i], penalties[i]);
+        Penalty* penalty = new Penalty(penaltyAmount, violations[i]);
+        car.recordViolation(penalty);
     }
 
     cout << "Total penalties for " << driver.getName() << ": " << driver.getTotalPenalties() << endl;
