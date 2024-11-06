@@ -4,7 +4,7 @@
 
 using namespace std;
 
-// Abstract class to represent common behavior for violations
+
 class IViolation {
 public:
     virtual string getDescription() const = 0;  
@@ -17,7 +17,11 @@ private:
     string description;
 
 public:
+    // Constructor to initialize description
     TrafficViolation(const string& desc) : description(desc) {}
+
+    // Destructor 
+    ~TrafficViolation() {}
 
     string getDescription() const override {
         return description;
@@ -35,7 +39,11 @@ private:
     TrafficViolation violation;
 
 public:
+    // Constructor to initialize penalty amount and violation
     Penalty(double amt, const TrafficViolation& viol) : amount(amt), violation(viol) {}
+
+    // Destructor
+    ~Penalty() {}
 
     string getDescription() const override {
         return violation.getDescription();
@@ -55,9 +63,13 @@ private:
 public:
     static int totalDrivers;
 
+    // Constructor to initialize driver name and license
     Driver(const string& n, const string& license) : name(n), licenseNumber(license) {
         totalDrivers++;
     }
+
+    // Destructor to clean up penalties vector 
+    ~Driver() {}
 
     string getName() const {
         return name;
@@ -80,7 +92,6 @@ public:
     }
 };
 
-
 int Driver::totalDrivers = 0;
 
 class Car {
@@ -92,7 +103,15 @@ private:
 public:
     static int totalViolations;
 
+    // Constructor to initialize registration number and owner
     Car(const string& reg_num, Driver& own) : regNumber(reg_num), owner(own) {}
+
+    // Destructor to clean up violations dynamically allocated memory
+    ~Car() {
+        for (auto viol : violations) {
+            delete viol;
+        }
+    }
 
     void recordViolation(IViolation* violation) {
         violations.push_back(violation);
@@ -110,7 +129,6 @@ public:
         return owner;
     }
 };
-
 
 int Car::totalViolations = 0;
 
