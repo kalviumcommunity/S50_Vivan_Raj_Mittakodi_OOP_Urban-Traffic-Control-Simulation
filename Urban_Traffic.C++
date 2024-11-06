@@ -4,13 +4,15 @@
 
 using namespace std;
 
+// Abstract class with pure virtual functions
 class IViolation {
 public:
-    virtual string getDescription() const = 0;  
-    virtual double getAmount() const = 0;       
-    virtual ~IViolation() = default;             
+    virtual string getDescription() const = 0;  // Pure virtual function
+    virtual double getAmount() const = 0;       // Pure virtual function
+    virtual ~IViolation() = default;             // Virtual destructor
 };
 
+// Base class for traffic violations
 class TrafficViolation : public IViolation {
 protected:
     string description;
@@ -23,8 +25,8 @@ public:
         return description;
     }
 
-    virtual double getAmount() const override {
-        return 0.0;  // Default implementation
+    double getAmount() const override {
+        return 0.0;  // Default penalty amount
     }
 };
 
@@ -38,7 +40,7 @@ public:
         : TrafficViolation(desc), speedOverLimit(speed) {}
 
     double getAmount() const override {
-        return 100.0 + (speedOverLimit * 10);  // Speeding penalty calculation
+        return 100.0 + (speedOverLimit * 10);  // Penalty for speeding
     }
 };
 
@@ -48,7 +50,7 @@ public:
     ParkingViolation(const string& desc) : TrafficViolation(desc) {}
 
     double getAmount() const override {
-        return 50.0;  // Fixed parking penalty
+        return 50.0;  // Fixed penalty for parking violation
     }
 };
 
@@ -61,11 +63,11 @@ public:
     Penalty(double amt, TrafficViolation& viol) : amount(amt), violation(viol) {}
 
     string getDescription() const override {
-        return violation.getDescription();
+        return violation.getDescription();  // Call base class method
     }
 
     double getAmount() const override {
-        return amount;
+        return amount;  // Return the penalty amount
     }
 };
 
@@ -118,7 +120,7 @@ public:
 
     ~Car() {
         for (auto viol : violations) {
-            delete viol;  // Polymorphic deletion
+            delete viol;  // Polymorphic deletion of objects
         }
     }
 
