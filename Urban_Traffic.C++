@@ -17,7 +17,6 @@ protected:
 
 public:
     TrafficViolation(const string& desc) : description(desc) {}
- 
     virtual ~TrafficViolation() {}
 
     string getDescription() const override {
@@ -25,7 +24,7 @@ public:
     }
 
     virtual double getAmount() const override {
-        return 0.0;  
+        return 0.0;  // Default implementation
     }
 };
 
@@ -39,7 +38,7 @@ public:
         : TrafficViolation(desc), speedOverLimit(speed) {}
 
     double getAmount() const override {
-        return 100.0 + (speedOverLimit * 10);  
+        return 100.0 + (speedOverLimit * 10);  // Speeding penalty calculation
     }
 };
 
@@ -49,7 +48,7 @@ public:
     ParkingViolation(const string& desc) : TrafficViolation(desc) {}
 
     double getAmount() const override {
-        return 50.0;  
+        return 50.0;  // Fixed parking penalty
     }
 };
 
@@ -59,11 +58,7 @@ private:
     TrafficViolation& violation;
 
 public:
-    // Constructor to initialize penalty amount and violation
     Penalty(double amt, TrafficViolation& viol) : amount(amt), violation(viol) {}
-
-    // Destructor
-    ~Penalty() {}
 
     string getDescription() const override {
         return violation.getDescription();
@@ -83,13 +78,9 @@ private:
 public:
     static int totalDrivers;
 
-    // Constructor to initialize driver name and license
     Driver(const string& n, const string& license) : name(n), licenseNumber(license) {
         totalDrivers++;
     }
-
-    // Destructor to clean up penalties vector 
-    ~Driver() {}
 
     string getName() const {
         return name;
@@ -106,7 +97,7 @@ public:
     double getTotalPenalties() const {
         double total = 0;
         for (const auto& penalty : penalties) {
-            total += penalty.getAmount();
+            total += penalty.getAmount();  // Polymorphic call
         }
         return total;
     }
@@ -123,13 +114,11 @@ private:
 public:
     static int totalViolations;
 
-    // Constructor to initialize registration number and owner
     Car(const string& reg_num, Driver& own) : regNumber(reg_num), owner(own) {}
 
-    // Destructor to clean up violations dynamically allocated memory
     ~Car() {
         for (auto viol : violations) {
-            delete viol;
+            delete viol;  // Polymorphic deletion
         }
     }
 
@@ -171,7 +160,7 @@ int main() {
     cin >> numViolations;
     cin.ignore();
 
-    TrafficViolation* violations = new TrafficViolation*[numViolations];
+    IViolation** violations = new IViolation*[numViolations];  // Using base class pointer
     double* penalties = new double[numViolations];
 
     for (int i = 0; i < numViolations; ++i) {
@@ -181,7 +170,7 @@ int main() {
         cout << "Enter violation description " << i + 1 << ": ";
         getline(cin, violationDesc);
 
-        
+        // Use polymorphism to decide which type of violation to create
         if (i % 2 == 0) {
             violations[i] = new SpeedingViolation(violationDesc, 15);  
         } else {
@@ -198,7 +187,6 @@ int main() {
     }
 
     cout << "Total penalties for " << driver.getName() << ": " << driver.getTotalPenalties() << endl;
-
     cout << "Total drivers created: " << Driver::totalDrivers << endl;
     cout << "Total violations recorded: " << Car::totalViolations << endl;
 
@@ -207,4 +195,3 @@ int main() {
 
     return 0;
 }
-
