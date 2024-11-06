@@ -4,7 +4,6 @@
 
 using namespace std;
 
-
 class IViolation {
 public:
     virtual string getDescription() const = 0;  
@@ -13,34 +12,55 @@ public:
 };
 
 class TrafficViolation : public IViolation {
-private:
+protected:
     string description;
 
 public:
-    // Constructor to initialize description
     TrafficViolation(const string& desc) : description(desc) {}
-
-    // Destructor 
-    ~TrafficViolation() {}
+ 
+    virtual ~TrafficViolation() {}
 
     string getDescription() const override {
         return description;
     }
 
-    double getAmount() const override {
+    virtual double getAmount() const override {
         return 0.0;  
     }
 };
 
+// Subclass for SpeedingViolation
+class SpeedingViolation : public TrafficViolation {
+private:
+    double speedOverLimit;
+
+public:
+    SpeedingViolation(const string& desc, double speed) 
+        : TrafficViolation(desc), speedOverLimit(speed) {}
+
+    double getAmount() const override {
+        return 100.0 + (speedOverLimit * 10);  
+    }
+};
+
+// Subclass for ParkingViolation
+class ParkingViolation : public TrafficViolation {
+public:
+    ParkingViolation(const string& desc) : TrafficViolation(desc) {}
+
+    double getAmount() const override {
+        return 50.0;  
+    }
+};
 
 class Penalty : public IViolation {
 private:
     double amount;
-    TrafficViolation violation;
+    TrafficViolation& violation;
 
 public:
     // Constructor to initialize penalty amount and violation
-    Penalty(double amt, const TrafficViolation& viol) : amount(amt), violation(viol) {}
+    Penalty(double amt, TrafficViolation& viol) : amount(amt), violation(viol) {}
 
     // Destructor
     ~Penalty() {}
@@ -151,7 +171,7 @@ int main() {
     cin >> numViolations;
     cin.ignore();
 
-    TrafficViolation* violations = new TrafficViolation[numViolations];
+    TrafficViolation* violations = new TrafficViolation*[numViolations];
     double* penalties = new double[numViolations];
 
     for (int i = 0; i < numViolations; ++i) {
@@ -160,14 +180,20 @@ int main() {
 
         cout << "Enter violation description " << i + 1 << ": ";
         getline(cin, violationDesc);
-        violations[i] = TrafficViolation(violationDesc);
+
+        
+        if (i % 2 == 0) {
+            violations[i] = new SpeedingViolation(violationDesc, 15);  
+        } else {
+            violations[i] = new ParkingViolation(violationDesc);  
+        }
 
         cout << "Enter penalty amount " << i + 1 << ": ";
         cin >> penaltyAmount;
         cin.ignore();
         penalties[i] = penaltyAmount;
 
-        Penalty* penalty = new Penalty(penaltyAmount, violations[i]);
+        Penalty* penalty = new Penalty(penaltyAmount, *violations[i]);
         car.recordViolation(penalty);
     }
 
@@ -181,3 +207,4 @@ int main() {
 
     return 0;
 }
+
