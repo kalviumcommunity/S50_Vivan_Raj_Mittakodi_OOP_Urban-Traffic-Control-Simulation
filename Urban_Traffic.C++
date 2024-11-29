@@ -18,7 +18,7 @@ protected:
     string description;
 
 public:
-    // Single Responsibility Principle (SRP): Manages basic violation details
+    // Open/Closed Principle (OCP): Base class allows new violation types without modification
     TrafficViolation(const string& desc) : description(desc) {}
     virtual ~TrafficViolation() {}
 
@@ -37,7 +37,7 @@ private:
     double speedOverLimit;
 
 public:
-    // Single Responsibility Principle (SRP): Handles behavior specific to speeding violations
+    // Open/Closed Principle (OCP): Extends TrafficViolation for specific speeding behavior
     SpeedingViolation(const string& desc, double speed) 
         : TrafficViolation(desc), speedOverLimit(speed) {}
 
@@ -49,7 +49,7 @@ public:
 // Subclass for ParkingViolation
 class ParkingViolation : public TrafficViolation {
 public:
-    // Single Responsibility Principle (SRP): Handles behavior specific to parking violations
+    // Open/Closed Principle (OCP): Extends TrafficViolation for specific parking behavior
     ParkingViolation(const string& desc) : TrafficViolation(desc) {}
 
     double getAmount() const override {
@@ -63,7 +63,7 @@ private:
     TrafficViolation& violation;
 
 public:
-    // Single Responsibility Principle (SRP): Encapsulates penalty details for violations
+    // Open/Closed Principle (OCP): Encapsulates penalty logic for different violations
     Penalty(double amt, TrafficViolation& viol) : amount(amt), violation(viol) {}
 
     string getDescription() const override {
@@ -84,7 +84,6 @@ private:
 public:
     static int totalDrivers;
 
-    // Single Responsibility Principle (SRP): Manages driver data and their penalties
     Driver(const string& n, const string& license) : name(n), licenseNumber(license) {
         totalDrivers++;
     }
@@ -121,7 +120,6 @@ private:
 public:
     static int totalViolations;
 
-    // Single Responsibility Principle (SRP): Manages car data and associated violations
     Car(const string& reg_num, Driver& own) : regNumber(reg_num), owner(own) {}
 
     ~Car() {
@@ -131,6 +129,7 @@ public:
     }
 
     void recordViolation(IViolation* violation) {
+        // Open/Closed Principle (OCP): Supports adding new IViolation types without modifying this logic
         violations.push_back(violation);
         if (Penalty* penalty = dynamic_cast<Penalty*>(violation)) {
             owner.addPenalty(*penalty);
@@ -178,7 +177,7 @@ int main() {
         cout << "Enter violation description " << i + 1 << ": ";
         getline(cin, violationDesc);
 
-        // Single Responsibility Principle (SRP): Creating appropriate violation types
+        // Open/Closed Principle (OCP): Adding new types of violations is possible without modifying existing logic
         if (i % 2 == 0) {
             violations[i] = new SpeedingViolation(violationDesc, 15);  
         } else {
@@ -190,12 +189,10 @@ int main() {
         cin.ignore();
         penalties[i] = penaltyAmount;
 
-        // Single Responsibility Principle (SRP): Adding penalties to the car
         Penalty* penalty = new Penalty(penaltyAmount, *violations[i]);
         car.recordViolation(penalty);
     }
 
-    // Single Responsibility Principle (SRP): Summarizing driver and violation statistics
     cout << "Total penalties for " << driver.getName() << ": " << driver.getTotalPenalties() << endl;
     cout << "Total drivers created: " << Driver::totalDrivers << endl;
     cout << "Total violations recorded: " << Car::totalViolations << endl;
