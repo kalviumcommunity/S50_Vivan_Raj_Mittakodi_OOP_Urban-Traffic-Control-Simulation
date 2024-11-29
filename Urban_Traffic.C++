@@ -9,7 +9,7 @@ class IViolation {
 public:
     virtual string getDescription() const = 0;  // Pure virtual function
     virtual double getAmount() const = 0;       // Pure virtual function
-    virtual ~IViolation() = default;             // Virtual destructor
+    virtual ~IViolation() = default;            // Virtual destructor
 };
 
 // Base class for traffic violations
@@ -18,6 +18,7 @@ protected:
     string description;
 
 public:
+    // Single Responsibility Principle (SRP): Manages basic violation details
     TrafficViolation(const string& desc) : description(desc) {}
     virtual ~TrafficViolation() {}
 
@@ -36,6 +37,7 @@ private:
     double speedOverLimit;
 
 public:
+    // Single Responsibility Principle (SRP): Handles behavior specific to speeding violations
     SpeedingViolation(const string& desc, double speed) 
         : TrafficViolation(desc), speedOverLimit(speed) {}
 
@@ -47,6 +49,7 @@ public:
 // Subclass for ParkingViolation
 class ParkingViolation : public TrafficViolation {
 public:
+    // Single Responsibility Principle (SRP): Handles behavior specific to parking violations
     ParkingViolation(const string& desc) : TrafficViolation(desc) {}
 
     double getAmount() const override {
@@ -60,6 +63,7 @@ private:
     TrafficViolation& violation;
 
 public:
+    // Single Responsibility Principle (SRP): Encapsulates penalty details for violations
     Penalty(double amt, TrafficViolation& viol) : amount(amt), violation(viol) {}
 
     string getDescription() const override {
@@ -80,6 +84,7 @@ private:
 public:
     static int totalDrivers;
 
+    // Single Responsibility Principle (SRP): Manages driver data and their penalties
     Driver(const string& n, const string& license) : name(n), licenseNumber(license) {
         totalDrivers++;
     }
@@ -116,6 +121,7 @@ private:
 public:
     static int totalViolations;
 
+    // Single Responsibility Principle (SRP): Manages car data and associated violations
     Car(const string& reg_num, Driver& own) : regNumber(reg_num), owner(own) {}
 
     ~Car() {
@@ -172,7 +178,7 @@ int main() {
         cout << "Enter violation description " << i + 1 << ": ";
         getline(cin, violationDesc);
 
-        // Use polymorphism to decide which type of violation to create
+        // Single Responsibility Principle (SRP): Creating appropriate violation types
         if (i % 2 == 0) {
             violations[i] = new SpeedingViolation(violationDesc, 15);  
         } else {
@@ -184,10 +190,12 @@ int main() {
         cin.ignore();
         penalties[i] = penaltyAmount;
 
+        // Single Responsibility Principle (SRP): Adding penalties to the car
         Penalty* penalty = new Penalty(penaltyAmount, *violations[i]);
         car.recordViolation(penalty);
     }
 
+    // Single Responsibility Principle (SRP): Summarizing driver and violation statistics
     cout << "Total penalties for " << driver.getName() << ": " << driver.getTotalPenalties() << endl;
     cout << "Total drivers created: " << Driver::totalDrivers << endl;
     cout << "Total violations recorded: " << Car::totalViolations << endl;
