@@ -18,7 +18,7 @@ protected:
     string description;
 
 public:
-    // Open/Closed Principle (OCP): Base class allows new violation types without modification
+    // Liskov Substitution Principle (LSP): TrafficViolation can replace IViolation
     TrafficViolation(const string& desc) : description(desc) {}
     virtual ~TrafficViolation() {}
 
@@ -37,7 +37,7 @@ private:
     double speedOverLimit;
 
 public:
-    // Open/Closed Principle (OCP): Extends TrafficViolation for specific speeding behavior
+    // Liskov Substitution Principle (LSP): SpeedingViolation can replace TrafficViolation
     SpeedingViolation(const string& desc, double speed) 
         : TrafficViolation(desc), speedOverLimit(speed) {}
 
@@ -49,7 +49,7 @@ public:
 // Subclass for ParkingViolation
 class ParkingViolation : public TrafficViolation {
 public:
-    // Open/Closed Principle (OCP): Extends TrafficViolation for specific parking behavior
+    // Liskov Substitution Principle (LSP): ParkingViolation can replace TrafficViolation
     ParkingViolation(const string& desc) : TrafficViolation(desc) {}
 
     double getAmount() const override {
@@ -63,7 +63,7 @@ private:
     TrafficViolation& violation;
 
 public:
-    // Open/Closed Principle (OCP): Encapsulates penalty logic for different violations
+    // Liskov Substitution Principle (LSP): Penalty can replace IViolation
     Penalty(double amt, TrafficViolation& viol) : amount(amt), violation(viol) {}
 
     string getDescription() const override {
@@ -129,7 +129,7 @@ public:
     }
 
     void recordViolation(IViolation* violation) {
-        // Open/Closed Principle (OCP): Supports adding new IViolation types without modifying this logic
+        // Liskov Substitution Principle (LSP): Any subclass of IViolation can be used here
         violations.push_back(violation);
         if (Penalty* penalty = dynamic_cast<Penalty*>(violation)) {
             owner.addPenalty(*penalty);
@@ -167,7 +167,7 @@ int main() {
     cin >> numViolations;
     cin.ignore();
 
-    IViolation** violations = new IViolation*[numViolations];  // Using base class pointer
+    IViolation** violations = new IViolation*[numViolations];  // Liskov Substitution Principle (LSP): Array of IViolation can store derived classes
     double* penalties = new double[numViolations];
 
     for (int i = 0; i < numViolations; ++i) {
@@ -177,7 +177,7 @@ int main() {
         cout << "Enter violation description " << i + 1 << ": ";
         getline(cin, violationDesc);
 
-        // Open/Closed Principle (OCP): Adding new types of violations is possible without modifying existing logic
+        // Liskov Substitution Principle (LSP): Creating objects of derived classes and storing them as base class type
         if (i % 2 == 0) {
             violations[i] = new SpeedingViolation(violationDesc, 15);  
         } else {
@@ -189,6 +189,7 @@ int main() {
         cin.ignore();
         penalties[i] = penaltyAmount;
 
+        // Liskov Substitution Principle (LSP): Penalty stored as IViolation
         Penalty* penalty = new Penalty(penaltyAmount, *violations[i]);
         car.recordViolation(penalty);
     }
